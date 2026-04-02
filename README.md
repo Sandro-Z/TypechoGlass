@@ -1,6 +1,6 @@
 # AeroGlass for Typecho
 
-AeroGlass 是一套面向 Typecho 1.3 的苹果风格主题，强调毛玻璃、高斯模糊、纯色、亮暗双模式和高扩展性。
+TypechoGlass 是一套面向 Typecho 1.3 的苹果风格主题，强调毛玻璃、高斯模糊、纯色、亮暗双模式和高扩展性。
 
 ## 主题能力
 
@@ -14,7 +14,7 @@ AeroGlass 是一套面向 Typecho 1.3 的苹果风格主题，强调毛玻璃、
 
 ## 安装
 
-1. 上传 `usr/themes/AeroGlass` 到站点 `usr/themes/`
+1. 上传本项目的所有代码到站点 `usr/themes/`，并将目录命名为`AeroGlass`
 2. 后台启用 `AeroGlass`
 3. 按需在主题设置里填写 Logo、社交链接、背景图等
 4. 友情链接页可创建一个独立页面并选择 `友情链接页` 模板
