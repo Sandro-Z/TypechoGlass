@@ -86,7 +86,7 @@ $hasDarkLogo = trim((string) ag_option('logoDark', '')) !== '';
         <button class="icon-btn" id="theme-toggle" type="button" aria-label="<?php _e('切换主题'); ?>">
           <span class="icon-wrap"><?php echo ag_icon('theme'); ?></span>
         </button>
-        <button class="icon-btn mobile-only" id="nav-toggle" type="button" aria-label="<?php _e('展开导航'); ?>">
+        <button class="icon-btn mobile-only" id="nav-toggle" type="button" aria-label="<?php _e('展开导航'); ?>" aria-controls="site-nav" aria-expanded="false">
           <span class="icon-wrap"><?php echo ag_icon('menu'); ?></span>
         </button>
       </div>
