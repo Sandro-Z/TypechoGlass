@@ -1,0 +1,458 @@
+<?php
+
+if (!defined('__TYPECHO_ROOT_DIR__')) exit;
+
+function themeConfig($form)
+{
+    $elements = [
+        text('heroEyebrow', 'Apple-inspired Typecho Theme', '首页眉标题', '显示在首页 Hero 小字上方。'),
+        text('heroTitle', 'Write with Clarity.', '首页标题', '首页 Hero 主标题。'),
+        textarea('heroSubtitle', '纯色、毛玻璃、高斯模糊与苹果设计语言风格融合的 Typecho 主题。', '首页副标题', '首页 Hero 副标题。'),
+        radio('colorMode', ['auto' => '跟随系统', 'light' => '浅色', 'dark' => '深色'], 'auto', '默认颜色模式', '仍可在前台手动切换。'),
+        text('logoLight', '', '浅色 Logo URL', '可留空，留空则使用文字标识。'),
+        text('logoDark', '', '深色 Logo URL', '可留空。'),
+        text('brandInitial', 'A', '文字 Logo 首字母', '当未设置 Logo 图片时显示。'),
+        text('brandTagline', '', '站点副标', '导航区域的小字。留空则使用站点描述。'),
+        text('accentLight', '#0071e3', '浅色强调色', '建议使用纯色。'),
+        text('accentDark', '#2997ff', '深色强调色', '建议使用纯色。'),
+        text('backgroundLight', '', '浅色背景图 URL', '可留空，留空则使用内置渐变背景。'),
+        text('backgroundDark', '', '深色背景图 URL', '可留空。'),
+        text('heroRadius', '32', '大圆角数值', '例如 32。'),
+        text('homePageSize', '10', '首页每页文章数', '用于首页文章分页。'),
+        text('archivePageSize', '10', '归档/搜索每页文章数', '用于普通列表页。'),
+        text('categoryPageSize', '12', '分类页每页文章数', '用于分类分页。'),
+        textarea('socialLinks', "[\n  {\"name\":\"GitHub\",\"icon\":\"github\",\"url\":\"https://github.com/yourname\"},\n  {\"name\":\"X\",\"icon\":\"x\",\"url\":\"https://x.com/yourname\"},\n  {\"name\":\"RSS\",\"icon\":\"rss\",\"url\":\"/feed/\"}\n]", '社交链接 JSON', '支持自定义名称、图标、地址。图标可用：github、x、telegram、mail、rss、bilibili、youtube、link。'),
+        textarea('extraNavLinks', "[\n  {\"name\":\"归档\",\"url\":\"/archive.html\"},\n  {\"name\":\"友链\",\"url\":\"/friends.html\"}\n]", '额外导航 JSON', '除独立页面外追加的导航。字段：name、url、newtab。'),
+        textarea('friendsIntro', '建议在本页正文里使用 Links Plus 短代码，或在 linksJson 字段中直接填写 JSON 友链数据。', '友链页说明', '用于友情链接页顶部说明。'),
+        textarea('sidebarIntro', '', '侧栏简介', '留空则使用站点描述。'),
+        textarea('footerText', 'AeroGlass 主题 · 轻盈、纯色、可扩展。', '页脚文案', '显示在页脚。'),
+        text('beian', '', '备案或附加文案', '例如 ICP 备案号。'),
+        checkbox('featureSwitch', [
+            'showReadingProgress' => '显示阅读进度条',
+            'showToc' => '显示文章目录',
+            'showCategoryStrip' => '首页显示分类条',
+            'allowPageComments' => '独立页面显示评论',
+        ], ['showReadingProgress', 'showToc', 'showCategoryStrip'], '功能开关', '按需启用。'),
+        textarea('customCss', '', '自定义 CSS', '直接输出到 head。'),
+        textarea('customJs', '', '自定义 JS', '直接输出到 footer。'),
+    ];
+
+    foreach ($elements as $element) {
+        $form->addInput($element);
+    }
+}
+
+function themeFields($layout)
+{
+    $fields = [
+        text_field('cover', '', '封面图 URL', '文章/页面封面图。'),
+        text_field('subtitle', '', '副标题', '显示在文章或页面头图区域。'),
+        radio_field('featured', ['0' => '否', '1' => '是'], '0', '是否推荐', '用于文章列表角标。'),
+        radio_field('disableToc', ['0' => '否', '1' => '是'], '0', '关闭目录', '只对当前文章有效。'),
+        textarea_field('linksJson', "[\n  {\"name\":\"Typecho\",\"url\":\"https://typecho.org\",\"description\":\"Typecho 官方站点\",\"image\":\"\"}\n]", '友链 JSON', '仅友情链接页模板使用。'),
+    ];
+
+    foreach ($fields as $field) {
+        $layout->addItem($field);
+    }
+}
+
+function themeInit($archive)
+{
+    if ($archive->is('index')) {
+        $archive->parameter->pageSize = max(1, (int) ag_option('homePageSize', '10'));
+        return;
+    }
+
+    if ($archive->is('category')) {
+        $archive->parameter->pageSize = max(1, (int) ag_option('categoryPageSize', '12'));
+        return;
+    }
+
+    if ($archive->is('search') || $archive->is('tag') || $archive->is('archive')) {
+        $archive->parameter->pageSize = max(1, (int) ag_option('archivePageSize', '10'));
+    }
+}
+
+function text($name, $value, $label, $description = '')
+{
+    $el = new \Typecho\Widget\Helper\Form\Element\Text($name, null, $value, _t($label), _t($description));
+    return $el;
+}
+
+function textarea($name, $value, $label, $description = '')
+{
+    return new \Typecho\Widget\Helper\Form\Element\Textarea($name, null, $value, _t($label), _t($description));
+}
+
+function radio($name, $options, $value, $label, $description = '')
+{
+    return new \Typecho\Widget\Helper\Form\Element\Radio($name, $options, $value, _t($label), _t($description));
+}
+
+function checkbox($name, $options, $value, $label, $description = '')
+{
+    return (new \Typecho\Widget\Helper\Form\Element\Checkbox($name, $options, $value, _t($label), _t($description)))->multiMode();
+}
+
+function text_field($name, $value, $label, $description = '')
+{
+    return new \Typecho\Widget\Helper\Form\Element\Text($name, null, $value, _t($label), _t($description));
+}
+
+function textarea_field($name, $value, $label, $description = '')
+{
+    return new \Typecho\Widget\Helper\Form\Element\Textarea($name, null, $value, _t($label), _t($description));
+}
+
+function radio_field($name, $options, $value, $label, $description = '')
+{
+    return new \Typecho\Widget\Helper\Form\Element\Radio($name, $options, $value, _t($label), _t($description));
+}
+
+function ag_option($name, $default = '')
+{
+    $options = \Helper::options();
+    if (isset($options->$name)) {
+        $value = $options->$name;
+        if ($value === null || $value === '') {
+            return $default;
+        }
+        return $value;
+    }
+    return $default;
+}
+
+function ag_option_bool($name, $default = false)
+{
+    $switches = ag_option('featureSwitch', []);
+    if (!is_array($switches)) {
+        $switches = (array) $switches;
+    }
+    return in_array($name, $switches, true) || (empty($switches) && $default);
+}
+
+function ag_asset($path)
+{
+    $options = \Helper::options();
+    $rootUrl = rtrim((string) $options->rootUrl, '/');
+    $themeDir = trim(defined('__TYPECHO_THEME_DIR__') ? __TYPECHO_THEME_DIR__ : '/usr/themes', '/');
+    $theme = trim((string) $options->theme, '/');
+
+    return $rootUrl . '/' . $themeDir . '/' . $theme . '/' . ltrim($path, '/');
+}
+
+function ag_parse_json($raw)
+{
+    if (!is_string($raw) || trim($raw) === '') {
+        return [];
+    }
+
+    $decoded = json_decode($raw, true);
+    return is_array($decoded) ? $decoded : [];
+}
+
+function ag_get_social_links()
+{
+    return ag_parse_json((string) ag_option('socialLinks', '[]'));
+}
+
+function ag_get_nav_links()
+{
+    return ag_parse_json((string) ag_option('extraNavLinks', '[]'));
+}
+
+function ag_document_title($archive)
+{
+    if ($archive->is('index')) {
+        return $archive->options->title . ' - ' . ag_option('heroTitle', $archive->options->description);
+    }
+    return $archive->title . ' - ' . $archive->options->title;
+}
+
+function ag_meta_description($archive)
+{
+    if ($archive->is('post') || $archive->is('page')) {
+        if (isset($archive->fields->subtitle) && trim((string) $archive->fields->subtitle) !== '') {
+            return trim((string) $archive->fields->subtitle);
+        }
+        return ag_excerpt_plain($archive, 140);
+    }
+    return $archive->options->description;
+}
+
+function ag_excerpt_plain($archive, $length = 140)
+{
+    $text = trim(strip_tags((string) $archive->text));
+    if (function_exists('mb_substr')) {
+        return mb_substr($text, 0, $length, 'UTF-8');
+    }
+    return substr($text, 0, $length);
+}
+
+function ag_get_cover($archive)
+{
+    if (isset($archive->fields->cover) && trim((string) $archive->fields->cover) !== '') {
+        return trim((string) $archive->fields->cover);
+    }
+    return '';
+}
+
+function ag_get_card_cover($archive)
+{
+    $cover = ag_get_cover($archive);
+    if ($cover !== '') {
+        return $cover;
+    }
+
+    return ag_extract_first_image_url($archive);
+}
+
+function ag_extract_first_image_url($archive)
+{
+    $raw = '';
+
+    if (isset($archive->text)) {
+        $raw = (string) $archive->text;
+    }
+
+    if ($raw === '' && isset($archive->content)) {
+        $raw = (string) $archive->content;
+    }
+
+    if ($raw === '') {
+        return '';
+    }
+
+    $patterns = [
+        '/<img[^>]+src=[\"\']([^\"\']+)[\"\']/iu',
+        '/!\[[^\]]*\]\(\s*<?([^\s)>]+)(?:\s+[\"\'][^\"\']*[\"\'])?\s*>?\)/u',
+    ];
+
+    foreach ($patterns as $pattern) {
+        if (preg_match($pattern, $raw, $matches) && !empty($matches[1])) {
+            return ag_normalize_media_url($matches[1]);
+        }
+    }
+
+    return '';
+}
+
+function ag_normalize_media_url($url)
+{
+    $url = trim(html_entity_decode((string) $url, ENT_QUOTES, 'UTF-8'));
+    if ($url === '') {
+        return '';
+    }
+
+    if (preg_match('/^(https?:)?\/\//i', $url) || strpos($url, 'data:') === 0) {
+        return $url;
+    }
+
+    if ($url[0] === '/') {
+        return $url;
+    }
+
+    $rootUrl = rtrim((string) \Helper::options()->rootUrl, '/');
+    return $rootUrl . '/' . ltrim($url, '/');
+}
+
+function ag_estimated_reading_time($text)
+{
+    $clean = trim(strip_tags((string) $text));
+    $length = function_exists('mb_strlen') ? mb_strlen($clean, 'UTF-8') : strlen($clean);
+    return max(1, (int) ceil($length / 450));
+}
+
+function ag_current_archive_title($archive)
+{
+    ob_start();
+    $archive->archiveTitle([
+        'category' => _t('分类：%s'),
+        'search' => _t('搜索：%s'),
+        'tag' => _t('标签：%s'),
+        'author' => _t('作者：%s')
+    ], '', '');
+    $title = trim(ob_get_clean());
+    return $title !== '' ? $title : _t('文章列表');
+}
+
+function ag_current_archive_subtitle($archive)
+{
+    if ($archive->is('category')) {
+        return _t('这里是当前分类下的全部文章，支持分类独立分页。');
+    }
+    if ($archive->is('search')) {
+        return _t('以下是与你搜索关键词相关的内容。');
+    }
+    if ($archive->is('tag')) {
+        return _t('按标签聚合的文章列表。');
+    }
+    return _t('按时间、标签、分类或搜索条件浏览内容。');
+}
+
+function ag_primary_category_name($archive)
+{
+    $categories = $archive->categories ?? [];
+    if (!empty($categories)) {
+        $first = $categories[0];
+        if (is_array($first) && isset($first['name'])) {
+            return $first['name'];
+        }
+        if (is_object($first) && isset($first->name)) {
+            return $first->name;
+        }
+    }
+    return _t('未分类');
+}
+
+function ag_render_post_card($archive)
+{
+    $cover = ag_get_cover($archive);
+    ?>
+    <article class="post-card glass-card">
+      <a class="post-card-link" href="<?php $archive->permalink(); ?>">
+        <div class="post-visual<?php if (!$cover): ?> no-image<?php endif; ?>">
+          <?php if ($cover): ?>
+            <img src="<?php echo htmlspecialchars($cover); ?>" alt="<?php $archive->title(); ?>">
+          <?php else: ?>
+            <div class="orb orb-a"></div>
+            <div class="orb orb-b"></div>
+            <div class="orb orb-c"></div>
+          <?php endif; ?>
+        </div>
+
+        <div class="post-card-body">
+          <div class="meta-row">
+            <span class="meta-pill"><?php echo htmlspecialchars(ag_primary_category_name($archive)); ?></span>
+            <span class="meta-time"><?php $archive->date('Y-m-d'); ?></span>
+          </div>
+          <h2><?php $archive->title(); ?></h2>
+          <p><?php echo htmlspecialchars(isset($archive->fields->subtitle) && trim((string) $archive->fields->subtitle) !== '' ? (string) $archive->fields->subtitle : ag_excerpt_plain($archive, 90)); ?></p>
+          <div class="post-card-foot">
+            <span><?php echo ag_estimated_reading_time($archive->text); ?> <?php _e('分钟阅读'); ?></span>
+            <span><?php $archive->commentsNum('0 评论', '1 评论', '%d 评论'); ?></span>
+          </div>
+        </div>
+      </a>
+    </article>
+    <?php
+}
+
+function ag_render_pagination($archive)
+{
+    echo '<nav class="pagination-wrap">';
+    $archive->pageNav(_t('上一页'), _t('下一页'), 2, '…', ['wrapTag' => 'ul', 'itemTag' => 'li', 'textTag' => 'span', 'currentClass' => 'is-current']);
+    echo '</nav>';
+}
+
+function ag_render_social_links()
+{
+    foreach (ag_get_social_links() as $item) {
+        if (empty($item['url'])) {
+            continue;
+        }
+        $name = $item['name'] ?? 'Link';
+        $icon = $item['icon'] ?? 'link';
+        echo '<a class="social-link" href="' . htmlspecialchars($item['url']) . '" target="_blank" rel="noopener noreferrer" aria-label="' . htmlspecialchars($name) . '">';
+        echo '<span class="icon-wrap">' . ag_icon($icon) . '</span>';
+        echo '<span>' . htmlspecialchars($name) . '</span>';
+        echo '</a>';
+    }
+}
+
+function ag_icon($name)
+{
+    $icons = [
+        'theme' => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12.79A9 9 0 1 1 11.21 3c0 .34 0 .68.05 1.01A7 7 0 0 0 20 12c.34.05.68.05 1 .79Z"/></svg>',
+        'menu' => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M4 12h16M4 17h16"/></svg>',
+        'arrow-up' => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m6 15 6-6 6 6"/><path d="M12 9v10"/></svg>',
+        'github' => '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.67.5 12.05c0 5.1 3.3 9.42 7.88 10.95.58.1.79-.26.79-.57v-2.02c-3.2.7-3.88-1.38-3.88-1.38-.53-1.35-1.28-1.71-1.28-1.71-1.04-.72.08-.71.08-.71 1.15.08 1.76 1.19 1.76 1.19 1.02 1.76 2.67 1.25 3.32.96.1-.75.4-1.25.72-1.54-2.56-.3-5.25-1.29-5.25-5.73 0-1.27.46-2.31 1.2-3.12-.12-.3-.52-1.52.12-3.17 0 0 .98-.31 3.2 1.19a10.9 10.9 0 0 1 5.83 0c2.22-1.5 3.2-1.19 3.2-1.19.64 1.65.24 2.87.12 3.17.75.81 1.2 1.85 1.2 3.12 0 4.45-2.7 5.42-5.28 5.72.41.35.77 1.04.77 2.1v3.11c0 .31.21.68.8.57A11.56 11.56 0 0 0 23.5 12.05C23.5 5.67 18.35.5 12 .5Z"/></svg>',
+        'x' => '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.9 2H22l-6.77 7.74L23.2 22h-6.25l-4.9-6.9L6.02 22H2.9l7.23-8.26L.8 2h6.4l4.43 6.25L18.9 2Zm-1.1 18h1.73L6.26 3.9H4.4L17.8 20Z"/></svg>',
+        'telegram' => '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M9.78 18.65c-.35 0-.29-.13-.41-.47l-1.05-3.46 8.1-5.13c.38-.23.73-.1.45.16l-6.56 5.92-.24 3.58c.35 0 .5-.16.7-.35l1.7-1.65 3.54 2.61c.66.37 1.12.18 1.29-.62l2.33-10.98c.25-.98-.37-1.42-1-1.14L4.78 12.5c-.95.39-.94.92-.17 1.16l3.61 1.13 8.36-5.28c.4-.24.76-.1.46.17"/></svg>',
+        'mail' => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16v12H4z"/><path d="m4 7 8 6 8-6"/></svg>',
+        'rss' => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1.5" fill="currentColor" stroke="none"/></svg>',
+        'bilibili' => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 5 9 3m6 2 2-2"/><rect x="3" y="6" width="18" height="13" rx="3"/><path d="M9.5 11.5v2m5-2v2"/><path d="M8 16c1 .8 2.3 1.2 4 1.2s3-.4 4-1.2"/></svg>',
+        'youtube' => '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.58 7.2a2.98 2.98 0 0 0-2.1-2.1C17.7 4.6 12 4.6 12 4.6s-5.7 0-7.48.5a2.98 2.98 0 0 0-2.1 2.1C1.9 9 1.9 12 1.9 12s0 3 .52 4.8a2.98 2.98 0 0 0 2.1 2.1c1.78.5 7.48.5 7.48.5s5.7 0 7.48-.5a2.98 2.98 0 0 0 2.1-2.1c.52-1.8.52-4.8.52-4.8s0-3-.52-4.8ZM10 15.5v-7l6 3.5-6 3.5Z"/></svg>',
+        'link' => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 14 6 18a3 3 0 0 1-4-4l4-4a3 3 0 0 1 4 0"/><path d="M14 10 18 6a3 3 0 0 1 4 4l-4 4a3 3 0 0 1-4 0"/><path d="M8 12h8"/></svg>',
+    ];
+
+    return $icons[$name] ?? $icons['link'];
+}
+
+
+function ag_render_adjacent_post_nav($archive)
+{
+    ob_start();
+    $hasOutput = false;
+    ?>
+    <section class="post-nav-grid">
+      <div class="glass-card nav-card nav-prev">
+        <?php
+        if (is_object($archive) && method_exists($archive, 'thePrev')) {
+            $archive->thePrev('%s', '<span class="muted">没有更早的文章</span>');
+            $hasOutput = true;
+        } elseif (function_exists('thePrev')) {
+            thePrev('%s', '<span class="muted">没有更早的文章</span>');
+            $hasOutput = true;
+        } else {
+            echo '<span class="muted">没有更早的文章</span>';
+        }
+        ?>
+      </div>
+      <div class="glass-card nav-card nav-next">
+        <?php
+        if (is_object($archive) && method_exists($archive, 'theNext')) {
+            $archive->theNext('%s', '<span class="muted">没有更新的文章</span>');
+            $hasOutput = true;
+        } elseif (function_exists('theNext')) {
+            theNext('%s', '<span class="muted">没有更新的文章</span>');
+            $hasOutput = true;
+        } else {
+            echo '<span class="muted">没有更新的文章</span>';
+        }
+        ?>
+      </div>
+    </section>
+    <?php
+    echo ob_get_clean();
+}
+
+function ag_threaded_comments_script_safe()
+{
+    if (class_exists('\Typecho\Utils\Helper') && method_exists('\Typecho\Utils\Helper', 'threadedCommentsScript')) {
+        \Typecho\Utils\Helper::threadedCommentsScript();
+        return;
+    }
+
+    if (class_exists('\Helper') && method_exists('\Helper', 'threadedCommentsScript')) {
+        \Helper::threadedCommentsScript();
+        return;
+    }
+
+    if (function_exists('threadedCommentsScript')) {
+        threadedCommentsScript();
+    }
+}
+
+function ag_comment_item($comments, $options)
+{
+    ?>
+    <li id="li-<?php $comments->theId(); ?>" class="comment-item">
+      <article id="<?php $comments->theId(); ?>" class="comment-card">
+        <div class="comment-avatar"><?php $comments->gravatar('48', '', '', _t('匿名')); ?></div>
+        <div class="comment-body">
+          <div class="comment-head">
+            <strong><?php $comments->author(); ?></strong>
+            <time><?php $comments->date($options->dateFormat); ?></time>
+          </div>
+          <div class="comment-content"><?php $comments->content(); ?></div>
+          <div class="comment-actions"><?php $comments->reply(_t('回复')); ?></div>
+        </div>
+      </article>
+      <?php if ($comments->children): ?>
+        <div class="comment-children"><?php $comments->threadedComments($options); ?></div>
+      <?php endif; ?>
+    </li>
+    <?php
+}

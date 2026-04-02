@@ -1,0 +1,10 @@
+.hero-home{margin-top:4px}
+.hero-archive{margin-top:4px}
+.single-header .entry-meta{display:flex;flex-wrap:wrap;gap:12px}
+.page-header-shell{min-height:220px}
+.timeline-list{display:grid;gap:12px}
+.timeline-item a{display:block;padding:14px 16px;border-radius:16px;background:var(--bg-soft);border:1px solid var(--line)}
+.not-found{margin-top:4px;min-height:60vh;place-items:center}
+.not-found-card{max-width:560px;padding:28px}
+.links-body .entry-content>*:first-child{margin-top:0}
+.links-body .entry-content>*:last-child{margin-bottom:0}
