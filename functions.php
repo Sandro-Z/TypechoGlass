@@ -142,8 +142,19 @@ function ag_asset($path)
     $rootUrl = rtrim((string) $options->rootUrl, '/');
     $themeDir = trim(defined('__TYPECHO_THEME_DIR__') ? __TYPECHO_THEME_DIR__ : '/usr/themes', '/');
     $theme = trim((string) $options->theme, '/');
+    $relativePath = ltrim($path, '/');
+    $assetUrl = $rootUrl . '/' . $themeDir . '/' . $theme . '/' . $relativePath;
+    $localPath = rtrim(__TYPECHO_ROOT_DIR__, '/\\') . DIRECTORY_SEPARATOR
+        . str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $themeDir) . DIRECTORY_SEPARATOR
+        . str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $theme) . DIRECTORY_SEPARATOR
+        . str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $relativePath);
 
-    return $rootUrl . '/' . $themeDir . '/' . $theme . '/' . ltrim($path, '/');
+    if (is_file($localPath)) {
+        $separator = strpos($assetUrl, '?') === false ? '?' : '&';
+        $assetUrl .= $separator . 'v=' . (string) filemtime($localPath);
+    }
+
+    return $assetUrl;
 }
 
 function ag_archive_has_math($archive)

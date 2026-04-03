@@ -206,16 +206,42 @@
   }
 
   function fetchJson(url) {
-    return window.fetch(url, {
-      headers: {
-        Accept: 'application/json'
-      }
-    }).then(function (response) {
-      if (!response.ok) {
-        throw new Error('天气服务暂时不可用，请稍后再试。');
-      }
+    if (typeof window.fetch !== 'function') {
+      return Promise.reject(new Error('当前浏览器不支持天气请求，请升级浏览器后重试。'));
+    }
 
-      return response.json();
+    const timeoutMs = 8000;
+
+    return withTimeout(
+      window.fetch(url, {
+        headers: {
+          Accept: 'application/json'
+        }
+      }).then(function (response) {
+        if (!response.ok) {
+          throw new Error('天气服务暂时不可用，请稍后再试。');
+        }
+
+        return response.json();
+      }),
+      timeoutMs,
+      '天气请求超时，请稍后刷新重试。'
+    );
+    }
+
+  function withTimeout(promise, timeoutMs, message) {
+    return new Promise(function (resolve, reject) {
+      const timer = window.setTimeout(function () {
+        reject(new Error(message));
+      }, timeoutMs);
+
+      promise.then(function (value) {
+        window.clearTimeout(timer);
+        resolve(value);
+      }).catch(function (error) {
+        window.clearTimeout(timer);
+        reject(error);
+      });
     });
   }
 
