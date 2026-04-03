@@ -2,6 +2,8 @@
 
 TypechoGlass 是一套面向 Typecho 1.3 的苹果风格主题，强调毛玻璃、高斯模糊、纯色、亮暗双模式和高扩展性。
 
+演示站点：https://sandroz.com
+
 ## 主题能力
 
 - 苹果风格 glassmorphism 视觉
