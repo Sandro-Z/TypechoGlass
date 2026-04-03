@@ -548,8 +548,8 @@ function ag_is_current_nav_link($archive, $url)
 function ag_document_title($archive)
 {
     if ($archive->is('index')) {
-        $heroTitle = trim((string) ag_option('heroTitle', $archive->options->description));
-        $siteTitle = trim((string) $archive->options->title);
+        $heroTitle = trim((string) ag_option('heroTitle', Helper::options()->description));
+        $siteTitle = trim((string) Helper::options()->title);
         if ($heroTitle === '' || $heroTitle === $siteTitle) {
             return $siteTitle !== '' ? $siteTitle : $heroTitle;
         }
@@ -557,7 +557,7 @@ function ag_document_title($archive)
     }
     return ag_join_title_parts([
         trim((string) $archive->title),
-        trim((string) $archive->options->title),
+        trim((string) Helper::options()->title),
     ]);
 }
 
@@ -584,7 +584,7 @@ function ag_meta_description($archive)
         }
         return ag_excerpt_plain($archive, 140);
     }
-    return $archive->options->description;
+    return Helper::options()->description;
 }
 
 function ag_excerpt_plain($archive, $length = 140)
