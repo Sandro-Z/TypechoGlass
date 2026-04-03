@@ -7,6 +7,7 @@ $title = ag_document_title($this);
 $favicon = ag_get_favicon_url();
 $hasDarkLogo = trim((string) ag_option('logoDark', '')) !== '';
 $hasMath = ag_archive_has_math($this);
+$pages = ag_get_published_pages();
 
 ?>
 <!DOCTYPE html>
@@ -77,13 +78,16 @@ $hasMath = ag_archive_has_math($this);
 
       <nav class="site-nav" id="site-nav">
         <a class="nav-link<?php if ($this->is('index')): ?> is-active<?php endif; ?>" href="<?php $this->options->siteUrl(); ?>"><?php _e('首页'); ?></a>
-        <?php \Widget\Contents\Page\Rows::alloc()->to($pages); ?>
-        <?php while ($pages->next()): ?>
-          <a class="nav-link<?php if ($this->is('page', $pages->slug)): ?> is-active<?php endif; ?>" href="<?php $pages->permalink(); ?>"><?php $pages->title(); ?></a>
-        <?php endwhile; ?>
+        <?php $renderedNav = []; ?>
+        <?php foreach ($pages as $page): ?>
+          <?php $renderedNav[] = ag_normalize_url_key($page['permalink']); ?>
+          <a class="nav-link<?php if ($this->is('page', $page['slug'])): ?> is-active<?php endif; ?>" href="<?php echo htmlspecialchars($page['permalink']); ?>"><?php echo htmlspecialchars($page['title']); ?></a>
+        <?php endforeach; ?>
         <?php foreach (ag_get_nav_links() as $item): ?>
-          <?php if (empty($item['url']) || empty($item['name'])) continue; ?>
-          <a class="nav-link" href="<?php echo htmlspecialchars($item['url']); ?>"<?php echo !empty($item['newtab']) ? ' target="_blank" rel="noopener noreferrer"' : ''; ?>><?php echo htmlspecialchars($item['name']); ?></a>
+          <?php $navKey = ag_normalize_url_key($item['url']); ?>
+          <?php if ($navKey !== '' && in_array($navKey, $renderedNav, true)) continue; ?>
+          <?php if ($navKey !== '') $renderedNav[] = $navKey; ?>
+          <a class="nav-link<?php if (ag_is_current_nav_link($this, $item['url'])): ?> is-active<?php endif; ?>" href="<?php echo htmlspecialchars($item['url']); ?>"<?php echo !empty($item['newtab']) ? ' target="_blank" rel="noopener noreferrer"' : ''; ?>><?php echo htmlspecialchars($item['name']); ?></a>
         <?php endforeach; ?>
       </nav>
 

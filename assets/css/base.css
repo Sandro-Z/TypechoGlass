@@ -235,7 +235,7 @@ html[data-theme="dark"] .site-brand.has-dark-logo .logo-dark{display:block}
   .side-column,.article-aside{position:static}
 }
 @media (max-width: 900px){
-  .hero-home,.hero-archive,.single-header{grid-template-columns:1fr}
+  .hero-home,.hero-archive,.single-header,.not-found-shell{grid-template-columns:1fr}
   .post-grid,.friend-grid,.post-nav-grid{grid-template-columns:1fr}
   .single-cover{width:100%;height:420px}
   .site-header{flex-wrap:wrap;align-items:center;row-gap:0;transition:row-gap .38s cubic-bezier(.22, 1, .36, 1)}
@@ -262,7 +262,7 @@ html[data-theme="dark"] .site-brand.has-dark-logo .logo-dark{display:block}
 }
 @media (max-width: 640px){
   .site-frame,.site-header-wrap,.site-footer-wrap{width:min(calc(100% - 20px), var(--content-max))}
-  .hero-home,.hero-archive,.single-header,.article-body,.site-footer,.category-strip,.comments-section{padding:18px}
+  .hero-home,.hero-archive,.single-header,.article-body,.site-footer,.category-strip,.comments-section,.not-found{padding:18px}
   .single-cover{height:320px}
   .hero-copy h1,.single-copy h1{font-size:clamp(1.7rem, 10vw, 3rem)}
   .brand-text small{display:none}

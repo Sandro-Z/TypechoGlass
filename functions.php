@@ -29,7 +29,7 @@ function themeConfig($form)
         text('archivePageSize', '10', '归档/搜索每页文章数', '用于普通列表页。'),
         text('categoryPageSize', '12', '分类页每页文章数', '用于分类分页。'),
         textarea('socialLinks', "[\n  {\"name\":\"GitHub\",\"icon\":\"github\",\"url\":\"https://github.com/yourname\"},\n  {\"name\":\"X\",\"icon\":\"x\",\"url\":\"https://x.com/yourname\"},\n  {\"name\":\"RSS\",\"icon\":\"rss\",\"url\":\"/feed/\"}\n]", '社交链接 JSON', '支持自定义名称、图标、地址。图标可用：github、x、telegram、mail、rss、bilibili、youtube、link。'),
-        textarea('extraNavLinks', "[\n  {\"name\":\"归档\",\"url\":\"/archive.html\"},\n  {\"name\":\"友链\",\"url\":\"/friends.html\"}\n]", '额外导航 JSON', '除独立页面外追加的导航。字段：name、url、newtab。'),
+        textarea('extraNavLinks', "[\n  {\"name\":\"归档\",\"url\":\"special:archive\"},\n  {\"name\":\"友链\",\"url\":\"special:friends\"}\n]", '额外导航 JSON', '除独立页面外追加的导航。字段：name、url、newtab。支持 special:archive / special:friends 自动匹配对应页面。'),
         textarea('friendsIntro', '建议在本页正文里使用 Links Plus 短代码，或在 linksJson 字段中直接填写 JSON 友链数据。', '友链页说明', '用于友情链接页顶部说明。'),
         textarea('sidebarIntro', '', '侧栏简介', '留空则使用站点描述。'),
         textarea('footerText', 'AeroGlass 主题 · 轻盈、纯色、可扩展。', '页脚文案', '显示在页脚。'),
@@ -258,9 +258,283 @@ function ag_get_social_links()
     return ag_parse_json((string) ag_option('socialLinks', '[]'));
 }
 
+function ag_lower_text($value)
+{
+    $value = trim((string) $value);
+    if ($value === '') {
+        return '';
+    }
+
+    if (function_exists('mb_strtolower')) {
+        return mb_strtolower($value, 'UTF-8');
+    }
+
+    return strtolower($value);
+}
+
+function ag_normalize_url_key($url)
+{
+    $url = trim((string) $url);
+    if ($url === '') {
+        return '';
+    }
+
+    if (strpos($url, 'special:') === 0) {
+        return ag_lower_text($url);
+    }
+
+    $parts = parse_url($url);
+    if ($parts === false) {
+        return ag_lower_text(rtrim($url, '/'));
+    }
+
+    $path = $parts['path'] ?? '/';
+    if ($path === '') {
+        $path = '/';
+    }
+    if ($path !== '/') {
+        $path = rtrim($path, '/');
+    }
+
+    $query = isset($parts['query']) && $parts['query'] !== '' ? '?' . $parts['query'] : '';
+
+    return ag_lower_text($path . $query);
+}
+
+function ag_get_published_pages()
+{
+    static $pages = null;
+
+    if ($pages !== null) {
+        return $pages;
+    }
+
+    $pages = [];
+
+    if (!class_exists('\Widget\Contents\Page\Rows')) {
+        return $pages;
+    }
+
+    try {
+        \Widget\Contents\Page\Rows::alloc()->to($widget);
+
+        while ($widget->next()) {
+            $permalink = trim((string) $widget->permalink);
+            if ($permalink === '') {
+                continue;
+            }
+
+            $pages[] = [
+                'title' => trim((string) $widget->title),
+                'slug' => trim((string) $widget->slug),
+                'permalink' => $permalink,
+                'template' => trim((string) $widget->template),
+            ];
+        }
+    } catch (\Throwable $e) {
+        return $pages;
+    }
+
+    return $pages;
+}
+
+function ag_get_special_nav_rules()
+{
+    return [
+        'archive' => [
+            'templates' => ['page-archive.php'],
+            'slugs' => ['archive', 'archives', 'timeline'],
+            'titles' => ['归档', '时间归档', 'Archive', 'Archives', 'Timeline'],
+            'aliases' => [
+                'special:archive',
+                '/archive',
+                '/archive.html',
+                '/archives',
+                '/archives.html',
+                '/timeline',
+                '/timeline.html',
+                'archive',
+                'archive.html',
+                'archives',
+                'archives.html',
+                'timeline',
+                'timeline.html',
+            ],
+        ],
+        'friends' => [
+            'templates' => ['page-links.php'],
+            'slugs' => ['friends', 'links', 'friend-links', 'friendlink', 'friendlinks'],
+            'titles' => ['友链', '友情链接', 'Friends', 'Links'],
+            'aliases' => [
+                'special:friends',
+                'special:links',
+                '/friends',
+                '/friends.html',
+                '/links',
+                '/links.html',
+                '/friend-links',
+                '/friend-links.html',
+                'friends',
+                'friends.html',
+                'links',
+                'links.html',
+                'friend-links',
+                'friend-links.html',
+            ],
+        ],
+    ];
+}
+
+function ag_match_special_nav_key($url)
+{
+    $raw = trim((string) $url);
+    if ($raw === '') {
+        return '';
+    }
+
+    $rawKey = ag_lower_text($raw);
+    $urlKey = ag_normalize_url_key($raw);
+
+    foreach (ag_get_special_nav_rules() as $key => $rule) {
+        foreach ($rule['aliases'] as $alias) {
+            $alias = trim((string) $alias);
+            if ($alias === '') {
+                continue;
+            }
+
+            if (strpos($alias, 'special:') === 0) {
+                if ($rawKey === ag_lower_text($alias)) {
+                    return $key;
+                }
+                continue;
+            }
+
+            if ($urlKey !== '' && $urlKey === ag_normalize_url_key($alias)) {
+                return $key;
+            }
+        }
+    }
+
+    return '';
+}
+
+function ag_find_special_page($key)
+{
+    $rules = ag_get_special_nav_rules();
+    if (empty($rules[$key])) {
+        return [];
+    }
+
+    $templateSet = array_map('ag_lower_text', $rules[$key]['templates']);
+    $slugSet = array_map('ag_lower_text', $rules[$key]['slugs']);
+    $titleSet = array_map('ag_lower_text', $rules[$key]['titles']);
+
+    $bestPage = [];
+    $bestScore = -1;
+
+    foreach (ag_get_published_pages() as $page) {
+        $score = 0;
+        $template = ag_lower_text($page['template'] ?? '');
+        $slug = ag_lower_text($page['slug'] ?? '');
+        $title = ag_lower_text($page['title'] ?? '');
+
+        if ($template !== '' && in_array($template, $templateSet, true)) {
+            $score = 300;
+        }
+
+        if ($slug !== '' && in_array($slug, $slugSet, true)) {
+            $score = max($score, 200);
+        }
+
+        if ($title !== '' && in_array($title, $titleSet, true)) {
+            $score = max($score, 100);
+        }
+
+        if ($score > $bestScore && !empty($page['permalink'])) {
+            $bestPage = $page;
+            $bestScore = $score;
+        }
+    }
+
+    return $bestPage;
+}
+
+function ag_get_special_page_permalink($key)
+{
+    $page = ag_find_special_page($key);
+    return !empty($page['permalink']) ? $page['permalink'] : '';
+}
+
+function ag_resolve_nav_url($url)
+{
+    $url = trim((string) $url);
+    if ($url === '') {
+        return '';
+    }
+
+    $specialKey = ag_match_special_nav_key($url);
+    if ($specialKey === '') {
+        return $url;
+    }
+
+    return ag_get_special_page_permalink($specialKey);
+}
+
 function ag_get_nav_links()
 {
-    return ag_parse_json((string) ag_option('extraNavLinks', '[]'));
+    $items = ag_parse_json((string) ag_option('extraNavLinks', '[]'));
+    $links = [];
+    $seen = [];
+
+    foreach ($items as $item) {
+        $name = trim((string) ($item['name'] ?? ''));
+        $url = ag_resolve_nav_url($item['url'] ?? '');
+
+        if ($name === '' || $url === '') {
+            continue;
+        }
+
+        $key = ag_normalize_url_key($url);
+        if ($key !== '' && isset($seen[$key])) {
+            continue;
+        }
+
+        if ($key !== '') {
+            $seen[$key] = true;
+        }
+
+        $item['name'] = $name;
+        $item['url'] = $url;
+        $links[] = $item;
+    }
+
+    return $links;
+}
+
+function ag_is_current_nav_link($archive, $url)
+{
+    $target = ag_normalize_url_key($url);
+    if ($target === '') {
+        return false;
+    }
+
+    $candidates = [];
+
+    if (is_object($archive) && isset($archive->permalink)) {
+        $candidates[] = (string) $archive->permalink;
+    }
+
+    if (!empty($_SERVER['REQUEST_URI'])) {
+        $candidates[] = (string) $_SERVER['REQUEST_URI'];
+    }
+
+    foreach ($candidates as $candidate) {
+        if (ag_normalize_url_key($candidate) === $target) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 function ag_document_title($archive)
