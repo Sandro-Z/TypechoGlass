@@ -164,10 +164,10 @@ html[data-theme="dark"] .page-bg-image{background-image:var(--dark-bg-image);opa
 .single-cover-wrap{display:flex;align-items:stretch}
 .single-cover{width:100%;min-height:280px;overflow:hidden}
 .single-cover.no-image{display:block}
-.article-layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:24px}
-.article-main{display:grid;gap:22px;min-width:0}
+.article-layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:24px;align-items:start}
+.article-main{display:grid;gap:22px;min-width:0;max-width:100%}
 .article-aside{position:sticky;top:104px;align-self:start}
-.article-body{padding:24px}
+.article-body{padding:24px;min-width:0;max-width:100%;overflow:hidden}
 .entry-footer{margin-top:24px;padding-top:18px;border-top:1px solid var(--line)}
 .nav-card{padding:18px;min-height:78px;display:flex;align-items:center}
 .nav-card .muted{color:var(--text-3)}
