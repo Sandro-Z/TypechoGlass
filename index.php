@@ -13,6 +13,7 @@
 if (!defined('__TYPECHO_ROOT_DIR__')) exit;
 
 $this->need('header.php');
+$weatherLocation = trim((string) ag_option('weatherLocation', 'Shanghai'));
 ?>
 <section class="hero glass-shell hero-home">
   <div class="hero-copy">
@@ -31,13 +32,46 @@ $this->need('header.php');
       <span class="label"><?php echo htmlspecialchars(ag_option('heroPanelOneLabel', '当前模式')); ?></span>
       <strong><?php echo htmlspecialchars(ag_option('heroPanelOneValue', '亮 / 暗自适应')); ?></strong>
     </div>
-    <div class="hero-stat">
-      <span class="label"><?php echo htmlspecialchars(ag_option('heroPanelTwoLabel', '主题特性')); ?></span>
-      <strong><?php echo htmlspecialchars(ag_option('heroPanelTwoValue', '毛玻璃 · 高斯模糊 · 纯色')); ?></strong>
-    </div>
-    <div class="hero-stat">
-      <span class="label"><?php echo htmlspecialchars(ag_option('heroPanelThreeLabel', '扩展能力')); ?></span>
-      <strong><?php echo htmlspecialchars(ag_option('heroPanelThreeValue', 'Logo · 社媒 · 友链 · 分页')); ?></strong>
+    <div class="hero-stat hero-weather" id="hero-weather" data-location="<?php echo htmlspecialchars($weatherLocation); ?>" aria-live="polite">
+      <div class="weather-card-head">
+        <div>
+          <span class="label"><?php _e('天气'); ?></span>
+          <strong class="weather-location" id="weather-location"><?php echo htmlspecialchars($weatherLocation !== '' ? $weatherLocation : '未设置地点'); ?></strong>
+        </div>
+        <span class="weather-pill" id="weather-pill"><?php _e('待更新'); ?></span>
+      </div>
+
+      <div class="weather-main">
+        <div class="weather-main-copy">
+          <div class="weather-temp">
+            <span id="weather-temperature">--</span>
+            <small>°C</small>
+          </div>
+          <p class="weather-summary" id="weather-summary"><?php _e('正在获取天气信息...'); ?></p>
+        </div>
+        <div class="weather-visual" id="weather-visual" aria-hidden="true">--</div>
+      </div>
+
+      <div class="weather-grid">
+        <div class="weather-metric">
+          <span><?php _e('体感'); ?></span>
+          <strong id="weather-feels-like">--</strong>
+        </div>
+        <div class="weather-metric">
+          <span><?php _e('湿度'); ?></span>
+          <strong id="weather-humidity">--</strong>
+        </div>
+        <div class="weather-metric">
+          <span><?php _e('风速'); ?></span>
+          <strong id="weather-wind">--</strong>
+        </div>
+        <div class="weather-metric">
+          <span><?php _e('高 / 低'); ?></span>
+          <strong id="weather-range">--</strong>
+        </div>
+      </div>
+
+      <p class="weather-meta" id="weather-meta"><?php _e('数据源：Open-Meteo'); ?></p>
     </div>
   </div>
 </section>
