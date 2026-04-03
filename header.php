@@ -4,6 +4,7 @@ $colorMode = ag_option('colorMode', 'auto');
 $lightBg = ag_option('backgroundLight', '');
 $darkBg = ag_option('backgroundDark', '');
 $title = ag_document_title($this);
+$favicon = ag_get_favicon_url();
 $hasDarkLogo = trim((string) ag_option('logoDark', '')) !== '';
 $hasMath = ag_archive_has_math($this);
 
@@ -15,6 +16,11 @@ $hasMath = ag_archive_has_math($this);
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#0b0b0f">
   <title><?php echo htmlspecialchars($title); ?></title>
+  <?php if ($favicon !== ''): ?>
+    <link rel="icon" href="<?php echo htmlspecialchars($favicon); ?>">
+    <link rel="shortcut icon" href="<?php echo htmlspecialchars($favicon); ?>">
+    <link rel="apple-touch-icon" href="<?php echo htmlspecialchars($favicon); ?>">
+  <?php endif; ?>
   <meta name="description" content="<?php echo htmlspecialchars(ag_meta_description($this)); ?>">
   <?php if (ag_get_cover($this)): ?>
     <meta property="og:image" content="<?php echo htmlspecialchars(ag_get_cover($this)); ?>">

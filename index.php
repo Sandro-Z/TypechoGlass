@@ -28,16 +28,16 @@ $this->need('header.php');
 
   <div class="hero-panel glass-card">
     <div class="hero-stat">
-      <span class="label"><?php _e('当前模式'); ?></span>
-      <strong><?php _e('亮 / 暗自适应'); ?></strong>
+      <span class="label"><?php echo htmlspecialchars(ag_option('heroPanelOneLabel', '当前模式')); ?></span>
+      <strong><?php echo htmlspecialchars(ag_option('heroPanelOneValue', '亮 / 暗自适应')); ?></strong>
     </div>
     <div class="hero-stat">
-      <span class="label"><?php _e('主题特性'); ?></span>
-      <strong><?php _e('毛玻璃 · 高斯模糊 · 纯色'); ?></strong>
+      <span class="label"><?php echo htmlspecialchars(ag_option('heroPanelTwoLabel', '主题特性')); ?></span>
+      <strong><?php echo htmlspecialchars(ag_option('heroPanelTwoValue', '毛玻璃 · 高斯模糊 · 纯色')); ?></strong>
     </div>
     <div class="hero-stat">
-      <span class="label"><?php _e('扩展能力'); ?></span>
-      <strong><?php _e('Logo · 社媒 · 友链 · 分页'); ?></strong>
+      <span class="label"><?php echo htmlspecialchars(ag_option('heroPanelThreeLabel', '扩展能力')); ?></span>
+      <strong><?php echo htmlspecialchars(ag_option('heroPanelThreeValue', 'Logo · 社媒 · 友链 · 分页')); ?></strong>
     </div>
   </div>
 </section>

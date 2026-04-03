@@ -8,7 +8,14 @@ function themeConfig($form)
         text('heroEyebrow', 'Apple-inspired Typecho Theme', '首页眉标题', '显示在首页 Hero 小字上方。'),
         text('heroTitle', 'Write with Clarity.', '首页标题', '首页 Hero 主标题。'),
         textarea('heroSubtitle', '纯色、毛玻璃、高斯模糊与苹果设计语言风格融合的 Typecho 主题。', '首页副标题', '首页 Hero 副标题。'),
+        text('heroPanelOneLabel', '当前模式', '首页信息卡 1 标题', '首页 Hero 右侧第一张卡片标题。'),
+        text('heroPanelOneValue', '亮 / 暗自适应', '首页信息卡 1 内容', '首页 Hero 右侧第一张卡片内容。'),
+        text('heroPanelTwoLabel', '主题特性', '首页信息卡 2 标题', '首页 Hero 右侧第二张卡片标题。'),
+        text('heroPanelTwoValue', '毛玻璃 · 高斯模糊 · 纯色', '首页信息卡 2 内容', '首页 Hero 右侧第二张卡片内容。'),
+        text('heroPanelThreeLabel', '扩展能力', '首页信息卡 3 标题', '首页 Hero 右侧第三张卡片标题。'),
+        text('heroPanelThreeValue', 'Logo · 社媒 · 友链 · 分页', '首页信息卡 3 内容', '首页 Hero 右侧第三张卡片内容。'),
         radio('colorMode', ['auto' => '跟随系统', 'light' => '浅色', 'dark' => '深色'], 'auto', '默认颜色模式', '仍可在前台手动切换。'),
+        text('favicon', '', '浏览器图标 URL', '用于浏览器标签页和收藏夹图标，支持 png、ico、svg。'),
         text('logoLight', '', '浅色 Logo URL', '可留空，留空则使用文字标识。'),
         text('logoDark', '', '深色 Logo URL', '可留空。'),
         text('brandInitial', 'A', '文字 Logo 首字母', '当未设置 Logo 图片时显示。'),
@@ -259,9 +266,32 @@ function ag_get_nav_links()
 function ag_document_title($archive)
 {
     if ($archive->is('index')) {
-        return $archive->options->title . ' - ' . ag_option('heroTitle', $archive->options->description);
+        $heroTitle = trim((string) ag_option('heroTitle', $archive->options->description));
+        $siteTitle = trim((string) $archive->options->title);
+        if ($heroTitle === '' || $heroTitle === $siteTitle) {
+            return $siteTitle !== '' ? $siteTitle : $heroTitle;
+        }
+        return ag_join_title_parts([$siteTitle, $heroTitle]);
     }
-    return $archive->title . ' - ' . $archive->options->title;
+    return ag_join_title_parts([
+        trim((string) $archive->title),
+        trim((string) $archive->options->title),
+    ]);
+}
+
+function ag_join_title_parts($parts, $separator = ' - ')
+{
+    $clean = [];
+
+    foreach ((array) $parts as $part) {
+        $part = trim((string) $part);
+        if ($part === '' || in_array($part, $clean, true)) {
+            continue;
+        }
+        $clean[] = $part;
+    }
+
+    return implode($separator, $clean);
 }
 
 function ag_meta_description($archive)
@@ -312,6 +342,16 @@ function ag_get_cover($archive)
         return trim((string) $archive->fields->cover);
     }
     return '';
+}
+
+function ag_get_favicon_url()
+{
+    $favicon = trim((string) ag_option('favicon', ''));
+    if ($favicon === '') {
+        return '';
+    }
+
+    return ag_normalize_media_url($favicon);
 }
 
 function ag_get_card_cover($archive)
