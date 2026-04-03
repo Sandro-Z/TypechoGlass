@@ -1,12 +1,30 @@
 (function () {
   const navToggle = document.getElementById('nav-toggle');
   const nav = document.getElementById('site-nav');
+  const siteHeader = document.querySelector('.site-header');
   const backtop = document.getElementById('backtop');
   const progress = document.getElementById('reading-progress');
 
   if (navToggle && nav) {
+    const syncNavState = function (isOpen) {
+      nav.classList.toggle('is-open', isOpen);
+      navToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+
+      if (siteHeader) {
+        siteHeader.classList.toggle('has-open-nav', isOpen);
+      }
+    };
+
+    syncNavState(nav.classList.contains('is-open'));
+
     navToggle.addEventListener('click', function () {
-      nav.classList.toggle('is-open');
+      syncNavState(!nav.classList.contains('is-open'));
+    });
+
+    window.addEventListener('resize', function () {
+      if (window.innerWidth > 900) {
+        syncNavState(false);
+      }
     });
   }
 

@@ -1,12 +1,12 @@
 <?php
 /**
- * AeroGlass for Typecho
+ * TypechoGlass
  *
  * Apple-inspired glassmorphism theme for Typecho.
  *
- * @package AeroGlass
- * @author OpenAI
- * @version 1.0.0
+ * @package TypechoGlass
+ * @author Sandro
+ * @version 1.0.1
  * @link https://typecho.org
  */
 

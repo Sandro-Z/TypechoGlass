@@ -210,28 +210,26 @@ function ag_get_card_cover($archive)
 
 function ag_extract_first_image_url($archive)
 {
-    $raw = '';
-
-    if (isset($archive->text)) {
-        $raw = (string) $archive->text;
-    }
-
-    if ($raw === '' && isset($archive->content)) {
-        $raw = (string) $archive->content;
-    }
-
-    if ($raw === '') {
-        return '';
-    }
-
     $patterns = [
         '/<img[^>]+src=[\"\']([^\"\']+)[\"\']/iu',
         '/!\[[^\]]*\]\(\s*<?([^\s)>]+)(?:\s+[\"\'][^\"\']*[\"\'])?\s*>?\)/u',
     ];
 
-    foreach ($patterns as $pattern) {
-        if (preg_match($pattern, $raw, $matches) && !empty($matches[1])) {
-            return ag_normalize_media_url($matches[1]);
+    $sources = [];
+
+    if (isset($archive->text) && trim((string) $archive->text) !== '') {
+        $sources[] = (string) $archive->text;
+    }
+
+    if (isset($archive->content) && trim((string) $archive->content) !== '') {
+        $sources[] = (string) $archive->content;
+    }
+
+    foreach ($sources as $raw) {
+        foreach ($patterns as $pattern) {
+            if (preg_match($pattern, $raw, $matches) && !empty($matches[1])) {
+                return ag_normalize_media_url($matches[1]);
+            }
         }
     }
 
@@ -308,7 +306,7 @@ function ag_primary_category_name($archive)
 
 function ag_render_post_card($archive)
 {
-    $cover = ag_get_cover($archive);
+    $cover = ag_get_card_cover($archive);
     ?>
     <article class="post-card glass-card">
       <a class="post-card-link" href="<?php $archive->permalink(); ?>">
