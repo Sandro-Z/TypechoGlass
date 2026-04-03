@@ -37,6 +37,16 @@
   <script src="<?php echo ag_asset('assets/js/main.js'); ?>"></script>
   <script src="<?php echo ag_asset('assets/js/toc.js'); ?>"></script>
   <script><?php echo ag_option('customJs', ''); ?></script>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        preview: 'none'
+      },
+      'fast-preview': {
+        disabled: true
+      }
+    });
+  </script>
   <?php if ($this->is('post') || $this->is('page')): ?>
     <?php if ($this->allow('comment')): ?>
       <?php ag_threaded_comments_script_safe(); ?>
