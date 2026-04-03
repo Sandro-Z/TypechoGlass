@@ -183,11 +183,33 @@ function ag_meta_description($archive)
 
 function ag_excerpt_plain($archive, $length = 140)
 {
-    $text = trim(strip_tags((string) $archive->text));
+    $text = ag_strip_math_expressions((string) $archive->text);
+    $text = trim(strip_tags($text));
+    $text = preg_replace('/\s+/u', ' ', $text);
+    if (!is_string($text)) {
+        $text = '';
+    }
     if (function_exists('mb_substr')) {
         return mb_substr($text, 0, $length, 'UTF-8');
     }
     return substr($text, 0, $length);
+}
+
+function ag_strip_math_expressions($text)
+{
+    $clean = preg_replace([
+        '/\$\$(?:.|[\r\n])*?\$\$/u',
+        '/\\\\\[(?:.|[\r\n])*?\\\\\]/u',
+        '/\\\\\((?:.|[\r\n])*?\\\\\)/u',
+        '/\\\\begin\{([a-zA-Z*]+)\}(?:.|[\r\n])*?\\\\end\{\1\}/u',
+        '/(?<!\$)\$(?!\$)(?:\\\\.|[^$\\\\\r\n])+(?<!\\\\)\$(?!\$)/u',
+    ], ' ', (string) $text);
+
+    if (!is_string($clean)) {
+        $clean = (string) $text;
+    }
+
+    return str_replace(['$$', '$', '\(', '\)', '\[', '\]'], ' ', $clean);
 }
 
 function ag_get_cover($archive)
