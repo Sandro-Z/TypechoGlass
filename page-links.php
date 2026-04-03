@@ -20,7 +20,7 @@ $linkItems = ag_parse_json($linksJson);
   </header>
 
   <section class="glass-card article-body links-body">
-    <div class="entry-content links-plugin-wrap">
+    <div class="entry-content links-plugin-wrap mathjax-process">
       <?php $this->content(); ?>
     </div>
 

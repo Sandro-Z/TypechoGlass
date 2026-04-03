@@ -15,9 +15,9 @@ $cover = ag_get_card_cover($this);
       </div>
       <h1><?php $this->title(); ?></h1>
       <?php if (isset($this->fields->subtitle) && trim((string) $this->fields->subtitle) !== ''): ?>
-        <p class="hero-subtitle"><?php echo htmlspecialchars((string) $this->fields->subtitle); ?></p>
+        <p class="hero-subtitle mathjax-process"><?php echo htmlspecialchars((string) $this->fields->subtitle); ?></p>
       <?php else: ?>
-        <p class="hero-subtitle"><?php echo htmlspecialchars(ag_excerpt_plain($this, 110)); ?></p>
+        <p class="hero-subtitle mathjax-process"><?php echo htmlspecialchars(ag_excerpt_plain($this, 110)); ?></p>
       <?php endif; ?>
 
       <div class="entry-meta glass-card compact-card">
@@ -45,7 +45,7 @@ $cover = ag_get_card_cover($this);
   <div class="article-layout">
     <main class="article-main">
       <section class="article-body glass-card">
-        <div class="entry-content" id="entry-content">
+        <div class="entry-content mathjax-process" id="entry-content">
           <?php $this->content(); ?>
         </div>
 
@@ -70,7 +70,7 @@ $cover = ag_get_card_cover($this);
           <h2><?php _e('目录'); ?></h2>
           <span><?php _e('自动生成'); ?></span>
         </div>
-        <div id="toc-container" class="toc-container"></div>
+        <div id="toc-container" class="toc-container mathjax-process"></div>
       </div>
     </aside>
     <?php endif; ?>

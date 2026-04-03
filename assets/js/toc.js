@@ -80,6 +80,7 @@
   window.addEventListener('scroll', scheduleActiveHeading, { passive: true });
   window.addEventListener('resize', scheduleActiveHeading);
   window.addEventListener('hashchange', scheduleActiveHeading);
+  window.addEventListener('ag:math-ready', scheduleActiveHeading);
 
   scheduleActiveHeading();
 

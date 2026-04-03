@@ -142,6 +142,100 @@ function ag_asset($path)
     return $rootUrl . '/' . $themeDir . '/' . $theme . '/' . ltrim($path, '/');
 }
 
+function ag_archive_has_math($archive)
+{
+    if (!is_object($archive) || !method_exists($archive, 'is')) {
+        return false;
+    }
+
+    if (!$archive->is('post') && !$archive->is('page')) {
+        return false;
+    }
+
+    foreach (ag_get_archive_math_sources($archive) as $source) {
+        if (preg_match('/\$\$(?:.|[\r\n])*?\$\$/u', $source)) {
+            return true;
+        }
+        if (preg_match('/\\\\\[(?:.|[\r\n])*?\\\\\]/u', $source)) {
+            return true;
+        }
+        if (preg_match('/\\\\\((?:.|[\r\n])*?\\\\\)/u', $source)) {
+            return true;
+        }
+        if (preg_match('/\\\\begin\{([a-zA-Z*]+)\}(?:.|[\r\n])*?\\\\end\{\1\}/u', $source)) {
+            return true;
+        }
+        if (preg_match('/(?<!\$)\$(?!\$)(?:\\\\.|[^$\\\\\r\n])+(?<!\\\\)\$(?!\$)/u', $source)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+function ag_get_archive_math_sources($archive)
+{
+    $sources = [];
+
+    foreach (['text', 'content'] as $field) {
+        if (isset($archive->$field) && trim((string) $archive->$field) !== '') {
+            $sources[] = (string) $archive->$field;
+        }
+    }
+
+    if (isset($archive->fields->subtitle) && trim((string) $archive->fields->subtitle) !== '') {
+        $sources[] = (string) $archive->fields->subtitle;
+    }
+
+    return $sources;
+}
+
+function ag_render_math_assets($archive)
+{
+    if (!ag_archive_has_math($archive)) {
+        return;
+    }
+
+    echo <<<'HTML'
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: {'[+]': [['$', '$'], ['\\(', '\\)']]},
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true,
+        processEnvironments: true
+      },
+      options: {
+        ignoreHtmlClass: 'mathjax-ignore',
+        processHtmlClass: 'mathjax-process',
+        skipHtmlTags: {'[+]': ['script', 'noscript', 'style', 'textarea', 'pre', 'code']}
+      },
+      startup: {
+        pageReady: () => {
+          return MathJax.startup.defaultPageReady().then(() => {
+            window.dispatchEvent(new Event('ag:math-ready'));
+          });
+        }
+      }
+    };
+
+    window.agTypesetMath = function (elements) {
+      if (!window.MathJax || typeof window.MathJax.typesetPromise !== 'function') {
+        return Promise.resolve();
+      }
+
+      if (!elements) {
+        return window.MathJax.typesetPromise();
+      }
+
+      const nodes = Array.isArray(elements) ? elements : [elements];
+      return window.MathJax.typesetPromise(nodes);
+    };
+  </script>
+  <script defer id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js"></script>
+HTML;
+}
+
 function ag_parse_json($raw)
 {
     if (!is_string($raw) || trim($raw) === '') {

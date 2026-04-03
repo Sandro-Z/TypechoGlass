@@ -10,9 +10,9 @@ $cover = ag_get_cover($this);
       <span class="eyebrow"><?php _e('Page'); ?></span>
       <h1><?php $this->title(); ?></h1>
       <?php if (isset($this->fields->subtitle) && trim((string) $this->fields->subtitle) !== ''): ?>
-        <p class="hero-subtitle"><?php echo htmlspecialchars((string) $this->fields->subtitle); ?></p>
+        <p class="hero-subtitle mathjax-process"><?php echo htmlspecialchars((string) $this->fields->subtitle); ?></p>
       <?php else: ?>
-        <p class="hero-subtitle"><?php echo htmlspecialchars($this->options->description); ?></p>
+        <p class="hero-subtitle mathjax-process"><?php echo htmlspecialchars($this->options->description); ?></p>
       <?php endif; ?>
     </div>
 
@@ -26,7 +26,7 @@ $cover = ag_get_cover($this);
   </header>
 
   <section class="article-body glass-card page-body">
-    <div class="entry-content" id="entry-content">
+    <div class="entry-content mathjax-process" id="entry-content">
       <?php $this->content(); ?>
     </div>
   </section>

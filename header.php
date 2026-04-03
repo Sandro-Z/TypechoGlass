@@ -5,6 +5,7 @@ $lightBg = ag_option('backgroundLight', '');
 $darkBg = ag_option('backgroundDark', '');
 $title = ag_document_title($this);
 $hasDarkLogo = trim((string) ag_option('logoDark', '')) !== '';
+$hasMath = ag_archive_has_math($this);
 
 ?>
 <!DOCTYPE html>
@@ -36,9 +37,10 @@ $hasDarkLogo = trim((string) ag_option('logoDark', '')) !== '';
     }
     <?php echo ag_option('customCss', ''); ?>
   </style>
+  <?php ag_render_math_assets($this); ?>
   <?php $this->header(); ?>
 </head>
-<body class="<?php echo $this->is('post') ? 'is-post' : ($this->is('page') ? 'is-page' : 'is-list'); ?>">
+<body class="<?php echo $this->is('post') ? 'is-post' : ($this->is('page') ? 'is-page' : 'is-list'); ?><?php if ($hasMath): ?> mathjax-ignore<?php endif; ?>">
   <div class="page-bg" aria-hidden="true">
     <div class="page-bg-image"></div>
     <div class="page-gradient page-gradient-a"></div>

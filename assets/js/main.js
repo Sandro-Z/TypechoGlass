@@ -42,6 +42,7 @@
 
   updateScrollUi();
   window.addEventListener('scroll', updateScrollUi, { passive: true });
+  window.addEventListener('ag:math-ready', updateScrollUi);
 
   if (backtop) {
     backtop.addEventListener('click', function () {

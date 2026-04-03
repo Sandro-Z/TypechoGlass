@@ -37,4 +37,9 @@
   max-width:100% !important;min-width:0 !important;height:auto !important;
   margin-inline:auto;border-radius:20px;box-shadow:var(--shadow-soft);object-fit:contain
 }
+.entry-content mjx-container{max-width:100%}
+.entry-content mjx-container[display="true"]{
+  margin:1.1em 0;overflow-x:auto;overflow-y:hidden;padding:.2rem 0
+}
+.entry-content mjx-container[display="true"] > *{min-width:max-content}
 .entry-content hr{border:none;border-top:1px solid var(--line);margin:2rem 0}
