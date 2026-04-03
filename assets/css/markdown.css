@@ -6,7 +6,7 @@
 .entry-content h3,
 .entry-content h4,
 .entry-content h5,
-.entry-content h6{line-height:1.2;letter-spacing:-.02em;margin:1.7em 0 .7em}
+.entry-content h6{line-height:1.2;letter-spacing:-.02em;margin:1.7em 0 .7em;scroll-margin-top:120px}
 .entry-content h2{font-size:1.72rem}
 .entry-content h3{font-size:1.34rem}
 .entry-content p,

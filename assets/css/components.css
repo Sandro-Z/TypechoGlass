@@ -1,9 +1,14 @@
 .toc-card{padding:18px}
-.toc-container{display:grid;gap:8px}
-.toc-item{display:block;padding:8px 10px;border-radius:12px;color:var(--text-2);font-size:.94rem}
-.toc-item:hover,.toc-item.is-active{background:var(--bg-soft);color:var(--text)}
-.toc-item.depth-3{padding-left:24px}
-.toc-item.depth-4{padding-left:38px}
+.toc-container{display:grid;gap:6px}
+.toc-item{
+  --toc-depth:1;
+  display:block;padding:8px 12px;
+  padding-left:calc(12px + (var(--toc-depth) - 1) * 14px);
+  border-radius:12px;border-left:2px solid transparent;color:var(--text-2);
+  font-size:.94rem;line-height:1.5;overflow-wrap:anywhere;
+  transition:background .2s ease,color .2s ease,border-color .2s ease
+}
+.toc-item:hover,.toc-item.is-active{background:var(--bg-soft);border-left-color:var(--brand);color:var(--text)}
 
 .comments-section{display:grid;gap:18px}
 .comment-list{list-style:none;margin:0;padding:0;display:grid;gap:14px}
