@@ -262,6 +262,11 @@ html[data-theme="dark"] .site-brand.has-dark-logo .logo-dark{display:block}
   appearance:none;-webkit-appearance:none
 }
 .icon-wrap{display:inline-flex;align-items:center;justify-content:center;line-height:0}
+.theme-toggle-icon{position:relative;width:20px;height:20px}
+.theme-icon{position:absolute;inset:0;display:inline-flex;align-items:center;justify-content:center}
+.theme-icon-sun{display:none}
+html[data-theme="dark"] .theme-icon-sun{display:inline-flex}
+html[data-theme="dark"] .theme-icon-moon{display:none}
 .icon-wrap svg,.floating-backtop svg,.social-link svg{display:block;width:20px;height:20px;flex:none}
 .mobile-only{display:none}
 

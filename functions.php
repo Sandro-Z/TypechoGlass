@@ -801,6 +801,8 @@ function ag_icon($name)
 {
     $icons = [
         'theme' => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12.79A9 9 0 1 1 11.21 3c0 .34 0 .68.05 1.01A7 7 0 0 0 20 12c.34.05.68.05 1 .79Z"/></svg>',
+        'sun' => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2.5M12 19.5V22M4.93 4.93l1.77 1.77M17.3 17.3l1.77 1.77M2 12h2.5M19.5 12H22M4.93 19.07l1.77-1.77M17.3 6.7l1.77-1.77"/></svg>',
+        'moon' => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3c0 .34 0 .68.05 1.01A7 7 0 0 0 20 12c.34.05.68.05 1 .79Z"/></svg>',
         'menu' => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M4 12h16M4 17h16"/></svg>',
         'arrow-up' => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m6 15 6-6 6 6"/><path d="M12 9v10"/></svg>',
         'github' => '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.67.5 12.05c0 5.1 3.3 9.42 7.88 10.95.58.1.79-.26.79-.57v-2.02c-3.2.7-3.88-1.38-3.88-1.38-.53-1.35-1.28-1.71-1.28-1.71-1.04-.72.08-.71.08-.71 1.15.08 1.76 1.19 1.76 1.19 1.02 1.76 2.67 1.25 3.32.96.1-.75.4-1.25.72-1.54-2.56-.3-5.25-1.29-5.25-5.73 0-1.27.46-2.31 1.2-3.12-.12-.3-.52-1.52.12-3.17 0 0 .98-.31 3.2 1.19a10.9 10.9 0 0 1 5.83 0c2.22-1.5 3.2-1.19 3.2-1.19.64 1.65.24 2.87.12 3.17.75.81 1.2 1.85 1.2 3.12 0 4.45-2.7 5.42-5.28 5.72.41.35.77 1.04.77 2.1v3.11c0 .31.21.68.8.57A11.56 11.56 0 0 0 23.5 12.05C23.5 5.67 18.35.5 12 .5Z"/></svg>',
