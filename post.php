@@ -2,7 +2,7 @@
 if (!defined('__TYPECHO_ROOT_DIR__')) exit;
 
 $this->need('header.php');
-$cover = ag_get_cover($this);
+$cover = ag_get_card_cover($this);
 ?>
 <article class="single-article">
   <header class="single-header glass-shell">
